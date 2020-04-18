@@ -97,6 +97,10 @@ void init()
 
 	// bind program
 	glUseProgram(shaderProg);
+
+	// delete shaders
+	glDeleteShader(vertShader);
+	glDeleteShader(fragShader);
 }
 
 void render()
