@@ -14,7 +14,8 @@ bool initGLAD();
 
 void processInput(GLFWwindow *window);
 
-unsigned int TriBuf;
+unsigned int TriBuf, EleBuf;
+unsigned int TriArr;
 unsigned int shaderProg;
 unsigned int vertShader, fragShader;
 
@@ -26,27 +27,14 @@ const char *vertexShaderSource = "#version 330 core\n"
 	"}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 	"out vec4 FragColor;\n"
+	"uniform vec4 ourColor;\n"
 	"void main()\n"
 	"{\n"
-	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"   FragColor = ourColor;\n"
 	"}\0";
 
-void init()
+void initProg()
 {
-	// create triangle vertices
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
-	};
-
-	// create VBO
-	glGenBuffers(1, &TriBuf);
-	glBindBuffer(GL_ARRAY_BUFFER, TriBuf);
-	
-	// bind vertices to VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
 	// create shaders
 	vertShader = glCreateShader(GL_VERTEX_SHADER);
 	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -103,8 +91,58 @@ void init()
 	glDeleteShader(fragShader);
 }
 
+void initGeom()
+{
+	// create triangle vertices
+	float vertices[] = {
+		 0.5f,  0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
+	};
+	unsigned int indices[] = {
+		0, 1, 3,
+		1, 2, 3
+	};
+
+	// create VAO
+	glGenVertexArrays(1, &TriArr);
+	glBindVertexArray(TriArr);
+
+	// create VBOs
+	glGenBuffers(1, &TriBuf);
+	glBindBuffer(GL_ARRAY_BUFFER, TriBuf);
+	
+	glGenBuffers(1, &EleBuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EleBuf);
+	
+	// bind vertices to VBO
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// binding locations
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+}
+
 void render()
 {
+	// bind stuff
+	glUseProgram(shaderProg);
+	glBindVertexArray(TriArr);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EleBuf);
+
+	// generate and assign color
+	float time = glfwGetTime();
+	float green = (sin(time) / 2.0f) + 0.5f;
+	int colorLoc = glGetUniformLocation(shaderProg, "ourColor");
+	glUniform4f(colorLoc, 0.0f, green, 0.0f, 1.0f);
+
+	// draw
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	// unbind
+	glBindVertexArray(0);
 }
 
 int main()
@@ -119,8 +157,11 @@ int main()
 	}
 
 	// init GL objects
-	init();
-	
+	initGeom();
+	initProg();
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
