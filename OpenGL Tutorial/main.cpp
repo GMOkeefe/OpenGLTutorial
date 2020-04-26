@@ -18,12 +18,15 @@ void processInput(GLFWwindow *window);
 
 unsigned int TriBuf;
 unsigned int TriArr;
-std::shared_ptr<Program> shader;
+std::shared_ptr<Program> prog;
 
 void initProg()
 {
-	shader = std::make_shared<Program>();
-	shader->init("triangle.vert", "triangle.frag");
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	prog = std::make_shared<Program>();
+	prog->init("triangle.vert", "triangle.frag");
 }
 
 void initGeom()
@@ -57,19 +60,19 @@ void initGeom()
 void render()
 {
 	// bind stuff
-	shader->bind();
+	prog->bind();
 	glBindVertexArray(TriArr);
 
 	// generate and assign color
 	float time = glfwGetTime();
-	float green = (sin(time) / 2.0f) + 0.5f;
-	int colorLoc = glGetUniformLocation(shader->progID, "ourColor");
-	glUniform4f(colorLoc, 0.0f, green, 0.0f, 1.0f);
+	float trans = (sin(time) / 2.0f) + 0.5f;
+
+	prog->setFloat(&std::string("trans"), trans);
 
 	// draw
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	shader->unbind();
+	prog->unbind();
 }
 
 int main()

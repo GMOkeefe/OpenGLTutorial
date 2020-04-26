@@ -120,6 +120,21 @@ bool Program::loadShader(const char *src, GLuint shaderType)
 	return true;
 }
 
+void Program::setBool(const std::string *name, bool value) const
+{
+	glUniform1i(glGetUniformLocation(progID, name->c_str()), (int)value);
+}
+
+void Program::setInt(const std::string *name, int value) const
+{
+	glUniform1i(glGetUniformLocation(progID, name->c_str()), value);
+}
+
+void Program::setFloat(const std::string *name, float value) const
+{
+	glUniform1f(glGetUniformLocation(progID, name->c_str()), value);
+}
+
 const char *Program::getShader(GLuint shaderType)
 {
 	return shaderText[shaderType].c_str();
