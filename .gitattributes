@@ -62,4 +62,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-glad.c -linguist-vendored
+glad.c linguist-vendored
