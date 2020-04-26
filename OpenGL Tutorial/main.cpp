@@ -16,7 +16,7 @@ bool initGLAD();
 
 void processInput(GLFWwindow *window);
 
-unsigned int TriBuf, EleBuf;
+unsigned int TriBuf;
 unsigned int TriArr;
 std::shared_ptr<Program> shader;
 
@@ -30,14 +30,9 @@ void initGeom()
 {
 	// create triangle vertices
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
-	};
-	unsigned int indices[] = {
-		0, 1, 3,
-		1, 2, 3
+		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,
+		 0.0f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f
 	};
 
 	// create VAO
@@ -48,16 +43,15 @@ void initGeom()
 	glGenBuffers(1, &TriBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, TriBuf);
 	
-	glGenBuffers(1, &EleBuf);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EleBuf);
-	
 	// bind vertices to VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// binding locations
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 }
 
 void render()
@@ -65,7 +59,6 @@ void render()
 	// bind stuff
 	shader->bind();
 	glBindVertexArray(TriArr);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EleBuf);
 
 	// generate and assign color
 	float time = glfwGetTime();
@@ -74,7 +67,7 @@ void render()
 	glUniform4f(colorLoc, 0.0f, green, 0.0f, 1.0f);
 
 	// draw
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	shader->unbind();
 }
