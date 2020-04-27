@@ -64,3 +64,4 @@
 
 glad.c linguist-vendored
 src/glad.c linguist-vendored
+stb_image.h linguist-vendored
