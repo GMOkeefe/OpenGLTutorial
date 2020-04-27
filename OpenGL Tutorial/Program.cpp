@@ -61,7 +61,7 @@ bool Program::compile()
 	{
 		glGetShaderInfoLog(shaderID[GL_VERTEX_SHADER], 512,
 			NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+		std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
 			<< infoLog << std::endl;
 		return false;
 	}
@@ -71,7 +71,7 @@ bool Program::compile()
 	{
 		glGetShaderInfoLog(shaderID[GL_FRAGMENT_SHADER], 512,
 			NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
+		std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
 			<< infoLog << std::endl;
 		return false;
 	}
@@ -84,7 +84,7 @@ bool Program::compile()
 	if (!success)
 	{
 		glGetProgramInfoLog(progID, 512, NULL, infoLog);
-		std::cout << "ERROR:SHADER_PROGRAM::LINK_FAILED\n"
+		std::cerr << "ERROR:SHADER_PROGRAM::LINK_FAILED\n"
 			<< infoLog << std::endl;
 		return false;
 	}
