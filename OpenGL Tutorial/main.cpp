@@ -3,6 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "Program.h"
 
 const unsigned int DEF_WIDTH = 800;
@@ -16,7 +19,7 @@ bool initGLAD();
 
 void processInput(GLFWwindow *window);
 
-unsigned int TriBuf;
+unsigned int TriBuf, TexBuf;
 unsigned int TriArr;
 std::shared_ptr<Program> prog;
 
@@ -38,6 +41,12 @@ void initGeom()
 		 0.0f,  0.5f, 0.0f
 	};
 
+	float texCoords[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.5f, 1.0f
+	};
+
 	// create VAO
 	glGenVertexArrays(1, &TriArr);
 	glBindVertexArray(TriArr);
@@ -48,6 +57,20 @@ void initGeom()
 	
 	// bind vertices to VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+	// setting texture values
+	// tiling
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	// interpolation
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// binding locations
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
